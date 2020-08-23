@@ -11,6 +11,8 @@ public class RoadController : MonoBehaviour
     private float tangentLength, maxDistance, minDistance, maxOffset;
     [SerializeField]
     private int nrStartPoints;
+    [SerializeField]
+    private GameObject carTrigger;
 
     public List<Vector2> roadPoints = new List<Vector2>();
 
@@ -28,20 +30,23 @@ public class RoadController : MonoBehaviour
 
         CreateRoad();
         SetOtherSprite();
+        carTrigger.transform.position = spriteShape.spline.GetPosition(nrStartPoints / 2);
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        /*
         timer += Time.deltaTime;
 
         if(timer >= 2)
         {
-            UpdateRoad();
+            UpdateRoad(2);
             timer = 0;
             SetOtherSprite();
         }
-
+        */
 
         
 
@@ -75,9 +80,9 @@ public class RoadController : MonoBehaviour
     }
 
     //updates the road so the roads repeats indefinetly
-    void UpdateRoad()
+    public void UpdateRoad(int amount)
     {
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < amount; i++)
         {
             spriteShape.spline.RemovePointAt(0);
             nrOfDeletetPoints++;
@@ -86,8 +91,10 @@ public class RoadController : MonoBehaviour
         {
             AddRoadPoint(i);
         }
+        SetOtherSprite();
     }
 
+    // adds a point at position i on the road spline
     void AddRoadPoint(int i)
     {
         if (i % 2 == 0)
@@ -111,5 +118,11 @@ public class RoadController : MonoBehaviour
         }
 
         roadPoints.Add(spriteShape.spline.GetPosition(i));
+    }
+
+    public void MoveTrigger()
+    {
+        UpdateRoad(2);
+        carTrigger.transform.position = spriteShape.spline.GetPosition(nrStartPoints / 2);
     }
 }

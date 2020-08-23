@@ -22,6 +22,9 @@ public class CarController : MonoBehaviour
 
     private void Update()
     {
+        //updates the score
+        UpdateScore();
+
         // Get input
         h = -Input.GetAxisRaw("Horizontal");
         v = Input.GetAxisRaw("Vertical");
@@ -74,6 +77,12 @@ public class CarController : MonoBehaviour
         }
         currentSpeed = rb.velocity.magnitude;
         
+    }
+
+    void UpdateScore()
+    {
+        GameManager.currentScore = Mathf.Round(transform.position.y * 100f) / 100f;
+        //Debug.Log(GameManager.currentScore);
     }
 }
 
