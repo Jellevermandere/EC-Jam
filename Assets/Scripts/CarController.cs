@@ -36,16 +36,18 @@ public class CarController : MonoBehaviour
 
         // Create car rotation
         float direction = Vector2.Dot(rb.velocity, rb.GetRelativeVector(Vector2.up));
+        rb.rotation += h * steering;
+        /*
         if (direction >= 0.0f)
         {
-            rb.rotation += h * steering * (rb.velocity.magnitude / maxSpeed);
+            rb.rotation += h * steering; //* (rb.velocity.magnitude / maxSpeed);
         }
         else
         {
-            rb.rotation -= h * steering * (rb.velocity.magnitude / maxSpeed);
+            rb.rotation -= h * steering; //* (rb.velocity.magnitude / maxSpeed);
         }
 
-        /*
+        
         rb.AddForce(speed, ForceMode2D.Impulse);
 
         // Create car rotation

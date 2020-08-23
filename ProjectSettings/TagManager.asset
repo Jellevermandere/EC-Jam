@@ -38,6 +38,18 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 3636513325
+    locked: 0
+  - name: Road
+    uniqueID: 2202019463
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Cars
+    uniqueID: 3591065549
+    locked: 0
+  - name: Forground
+    uniqueID: 3192702901
     locked: 0

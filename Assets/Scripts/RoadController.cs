@@ -1,0 +1,115 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.U2D;
+
+public class RoadController : MonoBehaviour
+{
+    [SerializeField]
+    private SpriteShapeController otherSpriteShape;
+    [SerializeField]
+    private float tangentLength, maxDistance, minDistance, maxOffset;
+    [SerializeField]
+    private int nrStartPoints;
+
+    public List<Vector2> roadPoints = new List<Vector2>();
+
+    private int nrOfDeletetPoints;
+
+    float timer;
+
+
+    private SpriteShapeController spriteShape;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        spriteShape = GetComponent<SpriteShapeController>();
+
+        CreateRoad();
+        SetOtherSprite();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        timer += Time.deltaTime;
+
+        if(timer >= 2)
+        {
+            UpdateRoad();
+            timer = 0;
+            SetOtherSprite();
+        }
+
+
+        
+
+    }
+    // updates the other spriteshape to mirror the edge collider
+    void SetOtherSprite()
+	{
+        otherSpriteShape.spline.Clear();
+
+        for (int i = spriteShape.spline.GetPointCount(); i > 0; i--)
+        {
+            otherSpriteShape.spline.InsertPointAt(0, spriteShape.spline.GetPosition(i-1));
+
+            otherSpriteShape.spline.SetTangentMode(0, ShapeTangentMode.Continuous);
+            otherSpriteShape.spline.SetLeftTangent(0, spriteShape.spline.GetLeftTangent(i - 1));
+            otherSpriteShape.spline.SetRightTangent(0, spriteShape.spline.GetRightTangent(i - 1));
+
+        }
+	}
+
+    // create a startroad
+    void CreateRoad()
+    {
+        spriteShape.spline.Clear();
+
+        for (int i = 0; i < nrStartPoints; i++)
+        {
+            AddRoadPoint(i);
+            
+        }
+    }
+
+    //updates the road so the roads repeats indefinetly
+    void UpdateRoad()
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            spriteShape.spline.RemovePointAt(0);
+            nrOfDeletetPoints++;
+        }
+        for (int i = spriteShape.spline.GetPointCount(); i < nrStartPoints; i++)
+        {
+            AddRoadPoint(i);
+        }
+    }
+
+    void AddRoadPoint(int i)
+    {
+        if (i % 2 == 0)
+        {
+            spriteShape.spline.InsertPointAt(i, Vector2.zero + new Vector2(Random.Range(0, maxOffset), (i+nrOfDeletetPoints) * maxDistance));
+        }
+        else
+        {
+            spriteShape.spline.InsertPointAt(i, Vector2.zero + new Vector2(Random.Range(0, -maxOffset), (i + nrOfDeletetPoints) * maxDistance));
+        }
+
+        spriteShape.spline.SetTangentMode(i, ShapeTangentMode.Continuous);
+
+        spriteShape.spline.SetLeftTangent(i, Vector3.down * tangentLength);
+        spriteShape.spline.SetRightTangent(i, Vector3.up * tangentLength);
+
+
+        if (i == 0)
+        {
+            spriteShape.spline.SetPosition(0, Vector2.zero);
+        }
+
+        roadPoints.Add(spriteShape.spline.GetPosition(i));
+    }
+}
