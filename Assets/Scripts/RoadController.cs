@@ -8,61 +8,76 @@ public class RoadController : MonoBehaviour
     [SerializeField]
     private SpriteShapeController otherSpriteShape;
     [SerializeField]
-    private float tangentLength, maxDistance, minDistance, maxOffset;
+    private float tangentLength, maxDistance, minDistance, maxOffset, timeBtwnSpawn, nrOfEnemies;
     [SerializeField]
-    private int nrStartPoints;
+    private int nrStartPoints, maxEnemies;
     [SerializeField]
-    private GameObject carTrigger;
+    private GameObject carTrigger, startParking;
+    [SerializeField]
+    private GameObject enemyCar;
 
     public List<Vector2> roadPoints = new List<Vector2>();
+    public List<Vector2> precisePoints = new List<Vector2>();
 
-    private int nrOfDeletetPoints;
+    public int nrOfDeletetPoints;
 
     float timer;
 
 
     private SpriteShapeController spriteShape;
+    [SerializeField]
+    private EdgeCollider2D edgeCollider;
 
     // Start is called before the first frame update
     void Start()
     {
         spriteShape = GetComponent<SpriteShapeController>();
-
         CreateRoad();
-        SetOtherSprite();
+        SetOtherSprite(otherSpriteShape);
         carTrigger.transform.position = spriteShape.spline.GetPosition(nrStartPoints / 2);
+
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        /*
-        timer += Time.deltaTime;
-
-        if(timer >= 2)
+        if(nrOfEnemies < maxEnemies)
         {
-            UpdateRoad(2);
-            timer = 0;
-            SetOtherSprite();
+            timer += Time.deltaTime;
+
         }
-        */
+
+        if (timer >= timeBtwnSpawn)
+        {
+            SpawnEnemy();
+            timer = 0f;
+        }
+        
 
         
 
     }
+    // spawn an enemy car
+    void SpawnEnemy()
+    {
+        
+        Instantiate(enemyCar, spriteShape.spline.GetPosition(nrOfDeletetPoints), Quaternion.identity);
+        nrOfEnemies++;
+    }
+
     // updates the other spriteshape to mirror the edge collider
-    void SetOtherSprite()
+    void SetOtherSprite(SpriteShapeController shape)
 	{
-        otherSpriteShape.spline.Clear();
+        shape.spline.Clear();
 
         for (int i = spriteShape.spline.GetPointCount(); i > 0; i--)
         {
-            otherSpriteShape.spline.InsertPointAt(0, spriteShape.spline.GetPosition(i-1));
+            shape.spline.InsertPointAt(0, spriteShape.spline.GetPosition(i-1));
 
-            otherSpriteShape.spline.SetTangentMode(0, ShapeTangentMode.Continuous);
-            otherSpriteShape.spline.SetLeftTangent(0, spriteShape.spline.GetLeftTangent(i - 1));
-            otherSpriteShape.spline.SetRightTangent(0, spriteShape.spline.GetRightTangent(i - 1));
+            shape.spline.SetTangentMode(0, ShapeTangentMode.Continuous);
+            shape.spline.SetLeftTangent(0, spriteShape.spline.GetLeftTangent(i - 1));
+            shape.spline.SetRightTangent(0, spriteShape.spline.GetRightTangent(i - 1));
 
         }
 	}
@@ -91,7 +106,9 @@ public class RoadController : MonoBehaviour
         {
             AddRoadPoint(i);
         }
-        SetOtherSprite();
+        SetOtherSprite(otherSpriteShape);
+
+
     }
 
     // adds a point at position i on the road spline
@@ -122,7 +139,9 @@ public class RoadController : MonoBehaviour
 
     public void MoveTrigger()
     {
+       
         UpdateRoad(2);
         carTrigger.transform.position = spriteShape.spline.GetPosition(nrStartPoints / 2);
+        startParking.transform.position = spriteShape.spline.GetPosition(0);
     }
 }

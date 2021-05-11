@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 //*********** Based on : https://answers.unity.com/questions/686025/top-down-2d-car-physics-1.html ***************//
 
@@ -8,6 +9,8 @@ public class CarController : MonoBehaviour
 {
     [SerializeField]
     public float acceleration, steering, maxSpeed;
+    [SerializeField]
+    private Text scoreText;
 
     private float h,v,currentSpeed;
     private Vector2 speed;
@@ -18,12 +21,17 @@ public class CarController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        GameManager.currentScore = 0f;
     }
 
     private void Update()
     {
         //updates the score
-        UpdateScore();
+        if (scoreText)
+        {
+            UpdateScore();
+
+        }
 
         // Get input
         h = -Input.GetAxisRaw("Horizontal");
@@ -82,6 +90,8 @@ public class CarController : MonoBehaviour
     void UpdateScore()
     {
         GameManager.currentScore = Mathf.Round(transform.position.y * 100f) / 100f;
+
+        scoreText.text = GameManager.currentScore.ToString() + "m";
         //Debug.Log(GameManager.currentScore);
     }
 }
